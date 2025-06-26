@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: consumer-nfc-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: consumer-nfc
+  template:
+    metadata:
+      labels:
+        app: consumer-nfc
+    spec:
+      containers:
+      - name: consumer-nfc
+        image: registry.deti/taskmaster/consumer-nfc:v4

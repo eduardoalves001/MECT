@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: testnfc-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: testnfc
+  template:
+    metadata:
+      labels:
+        app: testnfc
+    spec:
+      containers:
+      - name: testnfc
+        image: registry.deti/taskmaster/testnfc:v5
+        ports:
+        - containerPort: 5000

@@ -1,0 +1,15 @@
+# Ignorar ficheiro com o URL para a Base de Dados
+password.py
+
+# Ignorar o Virutal Environment
+venv/
+
+# Ignorar ficheiro de cache do Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignorr o kubetcl
+PointSystemAPI/kubetcl/
+

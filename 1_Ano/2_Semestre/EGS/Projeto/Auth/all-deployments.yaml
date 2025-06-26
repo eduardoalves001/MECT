@@ -1,0 +1,215 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auth-config
+  namespace: taskmaster
+data:
+  DATABASE_URL: postgresql://postgres:password@postgres-service:5432/PointSystemEGS
+  KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+  OAUTH_AUTHORIZE_URL: https://wso2-gw.ua.pt/authorize
+  OAUTH_TOKEN_URL: https://wso2-gw.ua.pt/token
+  OAUTH_USERINFO_URL: https://wso2-gw.ua.pt/userinfo
+  REDIRECT_URI: http://auth-service:5000
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: auth-secret
+  namespace: taskmaster
+type: Opaque
+stringData:
+  OAUTH_CLIENT_ID: u8vpP8lcTQLURxk8itbLvY4pySoa
+  OAUTH_CLIENT_SECRET: REeS1LgzdyZfPmaIXloiNor3cMwa
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zookeeper
+  namespace: taskmaster
+spec:
+  ports:
+    - port: 2181
+  selector:
+    app: zookeeper
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zookeeper
+  namespace: taskmaster
+  labels:
+    app: zookeeper
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zookeeper
+  template:
+    metadata:
+      labels:
+        app: zookeeper
+    spec:
+      containers:
+        - name: zookeeper
+          image: confluentinc/cp-zookeeper:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 2181
+          env:
+            - name: ZOOKEEPER_CLIENT_PORT
+              value: "2181"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka
+  namespace: taskmaster
+spec:
+  ports:
+    - port: 9092
+  selector:
+    app: kafka
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka
+  namespace: taskmaster
+  labels:
+    app: kafka
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka
+  template:
+    metadata:
+      labels:
+        app: kafka
+    spec:
+      containers:
+        - name: kafka
+          image: confluentinc/cp-kafka:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 9092
+          env:
+            - name: KAFKA_BROKER_ID
+              value: "1"
+            - name: KAFKA_ZOOKEEPER_CONNECT
+              value: "zookeeper:2181"
+            - name: KAFKA_ADVERTISED_LISTENERS
+              value: "PLAINTEXT://kafka:9092"
+            - name: KAFKA_LISTENERS
+              value: "PLAINTEXT://0.0.0.0:9092"
+            - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
+              value: "1"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+  namespace: taskmaster
+spec:
+  selector:
+    app: auth
+  ports:
+    - port: 5000
+      targetPort: 5000
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth
+  namespace: taskmaster
+  labels:
+    app: auth
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth
+  template:
+    metadata:
+      labels:
+        app: auth
+    spec:
+      containers:
+        - name: auth
+          image: registry.deti:5000/taskmaster/auth:v5
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5000
+          envFrom:
+            - configMapRef:
+                name: auth-config
+            - secretRef:
+                name: auth-secret
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: consumer-nfc
+  namespace: taskmaster
+  labels:
+    app: consumer-nfc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: consumer-nfc
+  template:
+    metadata:
+      labels:
+        app: consumer-nfc
+    spec:
+      containers:
+        - name: consumer
+          image: registry.deti:5000/taskmaster/consumer-nfc:v5
+          imagePullPolicy: Always
+          command: ["python"]
+          args: ["consumer_nfc.py"]
+          envFrom:
+            - configMapRef:
+                name: auth-config
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: testnfc
+  namespace: taskmaster
+  labels:
+    app: testnfc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: testnfc
+  template:
+    metadata:
+      labels:
+        app: testnfc
+    spec:
+      containers:
+        - name: testnfc
+          image: registry.deti:5000/taskmaster/testnfc:v5
+          imagePullPolicy: Always
+          command: ["python"]
+          args: ["testNFC.py"]
+          envFrom:
+            - configMapRef:
+                name: auth-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: testnfc-service
+  namespace: taskmaster
+spec:
+  selector:
+    app: testnfc
+  ports:
+    - port: 5000
+      targetPort: 5000
+  type: ClusterIP

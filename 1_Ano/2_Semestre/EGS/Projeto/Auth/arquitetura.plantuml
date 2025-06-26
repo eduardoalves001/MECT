@@ -1,0 +1,50 @@
+@startuml TaskMasterArchitecture
+
+title Arquitetura do Sistema TaskMaster
+
+skinparam componentStyle rectangle
+
+actor "Utilizador" as User
+cloud "App Mobile\n(React Native)" as Mobile
+
+package "Kubernetes Cluster (Namespace: taskmaster)" {
+
+    node "Ingress (Traefik)" {
+        [auth.taskmaster.deti] as AuthIngress
+        [nfc.taskmaster.deti] as NfcIngress
+        [points.taskmaster.deti] as PointsIngress
+        [notifications.taskmaster.deti] as NotificationsIngress
+    }
+
+    database "PostgreSQL\n(app-postgres)" as DB
+
+    component "Auth Service\n(auth.py)" as AuthService
+    component "NFC Server\n(testNFC.py)" as NFCServer
+    component "NFC Consumer\n(consumer_nfc.py)" as NFCConsumer
+    component "Kafka" as Kafka
+    component "Zookeeper" as Zookeeper
+    component "Points Service" as Points
+    component "Notifications Service" as Notifications
+}
+
+User --> Mobile : Interação com UI
+Mobile --> AuthIngress : Login OAuth
+AuthIngress --> AuthService : Redirecionamento e autenticação
+
+Mobile --> NfcIngress : POST /nfc com tag_id
+NfcIngress --> NFCServer : Recebe tag e envia p/ Kafka
+
+NFCServer --> Kafka : produce(tag_id)
+Kafka --> NFCConsumer : consume(tag_id)
+NFCConsumer --> DB : Guarda em tabela NFCTags
+
+Mobile --> PointsIngress : Acede a pontos do utilizador
+Mobile --> NotificationsIngress : Recebe notificações
+
+AuthService --> DB : Verifica e guarda utilizadores
+Points --> DB : Lê/escreve pontos
+Notifications --> DB : Regista notificações
+
+Kafka --> Zookeeper : Coordination
+
+@enduml

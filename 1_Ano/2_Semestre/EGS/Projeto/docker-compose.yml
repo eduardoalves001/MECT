@@ -1,0 +1,43 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:15
+    container_name: postgres_egpoints
+    restart: always
+    environment:
+      POSTGRES_DB: PointSystemEGS
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  pointsystem:
+    build:
+      context: ./PointSystemAPI
+      dockerfile: Dockerfile
+    container_name: pointsystem_api
+    depends_on:
+      - db
+    env_file:
+      - ./PointSystemAPI/.env
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./PointSystemAPI:/app
+
+  notifications-api:
+    build:
+      context: ./Notifications
+      dockerfile: Dockerfile
+    container_name: notifications_api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./Notifications:/app
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

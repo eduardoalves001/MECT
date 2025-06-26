@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  auth:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: registry.deti/taskmaster/auth:v4
+
+  consumer-nfc:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: registry.deti/taskmaster/consumer-nfc:v4
+
+  testnfc:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: registry.deti/taskmaster/testnfc:v4

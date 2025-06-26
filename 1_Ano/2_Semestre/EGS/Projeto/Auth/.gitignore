@@ -1,0 +1,22 @@
+# Ignorar ambientes virtuais e dependências locais
+Auth/venv/
+Auth/source/
+
+# Ignorar ficheiros compilados do Python
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignorar configurações de IDEs
+.vscode/
+.idea/
+
+# Ignorar ficheiros de sistema
+.DS_Store
+Thumbs.db
+
+# Ignorar ficheiros de log ou bases de dados locais (se existirem)
+*.log
+*.db
+*.sqlite3

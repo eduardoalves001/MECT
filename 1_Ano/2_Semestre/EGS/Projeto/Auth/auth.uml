@@ -1,0 +1,21 @@
+@startuml
+actor Utilizador
+participant Frontend
+participant "Auth API" as Auth
+participant "WSO2 Gateway" as WSO2
+
+Utilizador -> Frontend : Acede à página de login
+Frontend -> Auth : POST /login
+note right of Auth : Redireciona para /authorize no WSO2
+
+Auth -> WSO2 : Redirect para /authorize
+Utilizador -> WSO2 : Faz login institucional (UA)
+WSO2 -> Auth : Redireciona com code
+
+Auth -> WSO2 : POST /token (com code)
+WSO2 -> Auth : access_token
+Auth -> WSO2 : GET /userinfo (com token)
+WSO2 -> Auth : Dados do utilizador
+Auth -> Frontend : JWT com info do utilizador
+
+@enduml

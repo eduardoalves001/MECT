@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auth-config
+  namespace: taskMaster
+data:
+  DATABASE_URL: postgresql://postgres:password@postgres-service:5432/PointSystemEGS
+  KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+  OAUTH_AUTHORIZE_URL: https://wso2-gw.ua.pt/authorize
+  OAUTH_TOKEN_URL: https://wso2-gw.ua.pt/token
+  OAUTH_USERINFO_URL: https://wso2-gw.ua.pt/userinfo
+  REDIRECT_URI: http://auth-service:5000

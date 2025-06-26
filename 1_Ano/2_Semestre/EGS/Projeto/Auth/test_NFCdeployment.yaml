@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: testnfc
+  namespace: TaskMaster
+  labels:
+    app: testnfc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: testnfc
+  template:
+    metadata:
+      labels:
+        app: testnfc
+    spec:
+      containers:
+        - name: testnfc
+          image: registry.deti/TaskMaster/testnfc:v1
+          command: ["python"]
+          args: ["testNFC.py"]
+          envFrom:
+            - configMapRef:
+                name: auth-config

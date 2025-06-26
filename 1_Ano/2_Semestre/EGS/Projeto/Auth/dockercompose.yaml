@@ -1,0 +1,82 @@
+# dockercompose.yaml sem ngrok
+networks:
+  default:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.0.0/16
+
+services:
+
+  zookeeper_nfc:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper_nfc
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+
+  kafka_nfc:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka_nfc
+    depends_on:
+      - zookeeper_nfc
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper_nfc:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka_nfc:9092
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+
+  auth_api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: auth_api
+    command: python3 auth.py
+    depends_on:
+      - kafka_nfc
+    volumes:
+      - .:/app
+    working_dir: /app
+    env_file:
+      - init.env
+    ports:
+      - "5000:5000"
+
+  nfc_consumer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nfc_consumer
+    command: python3 nfc_system_final/nfc_backend/kafka/consumer_nfc.py
+    volumes:
+      - .:/app
+    working_dir: /app
+    env_file:
+      - init.env
+    depends_on:
+      - kafka_nfc
+    dns:
+      - 8.8.8.8
+    restart: on-failure
+
+  testnfc:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: testnfc
+    command: python3 testNFC.py
+    depends_on:
+      - auth_api
+    volumes:
+      - .:/app
+    working_dir: /app
+    env_file:
+      - init.env
+    ports:
+      - "5001:5000"

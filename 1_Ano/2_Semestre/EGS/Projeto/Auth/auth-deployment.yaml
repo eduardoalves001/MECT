@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-deployment
+  namespace: taskmaster
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth
+  template:
+    metadata:
+      labels:
+        app: auth
+    spec:
+      containers:
+      - name: auth
+        image: registry.deti/taskmaster/auth:v4
+        ports:
+        - containerPort: 5000
+        env:
+        - name: DATABASE_URL
+          value: postgresql://postgres:password@app-postgres:5432/PointSystemEGS
+        - name: OAUTH_CLIENT_ID
+          value: u8vpP8lcTQLURxk8itbLvY4pySoa
+        - name: OAUTH_CLIENT_SECRET
+          value: REeS1LgzdyZfPmaIXloiNor3cMwa
+        - name: OAUTH_AUTHORIZE_URL
+          value: https://wso2-gw.ua.pt/authorize
+        - name: OAUTH_TOKEN_URL
+          value: https://wso2-gw.ua.pt/token
+        - name: OAUTH_USERINFO_URL
+          value: https://wso2-gw.ua.pt/userinfo
+        - name: REDIRECT_URI
+          value: http://auth.taskmaster.deti/callback
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+  namespace: taskmaster
+spec:
+  selector:
+    app: auth
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 5000
+  type: ClusterIP
