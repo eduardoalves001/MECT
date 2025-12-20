@@ -1,0 +1,10 @@
+{
+  "testUser": {
+    "username": "user",
+    "password": "user"
+  },
+  "testThreatModel": {
+    "namePrefix": "E2E Test Model",
+    "description": "This is an automated test threat model created by Cypress E2E tests"
+  }
+}

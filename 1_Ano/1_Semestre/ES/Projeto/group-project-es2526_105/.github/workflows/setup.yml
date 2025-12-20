@@ -1,0 +1,139 @@
+name: CD - Setup Production Environment
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type "CLEAN" to confirm cleanup and setup'
+        required: true
+        type: string
+
+env:
+  SCRIPTS_DIR: './scripts'
+  RUNNER_CERTS_DIR: '${{ github.workspace }}/../rtmp-certs'
+  DOMAIN: ${{ vars.DOMAIN }}
+  POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+  POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+
+jobs:
+  setup:
+    runs-on: [self-hosted, castanheta]
+
+    steps:
+      - name: Validate confirmation
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          if [ "${{ github.event.inputs.confirm }}" != "CLEAN" ]; then
+            echo "❌ Setup cancelled. You must type 'CLEAN' to confirm."
+            exit 1
+          fi
+          echo "✅ Confirmation received. Proceeding with setup..."
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          clean: true
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.0"
+
+      - name: Prepare environment file
+        run: |
+          make prepare-env
+
+          sed -i "s|FRONTEND_URL=.*|FRONTEND_URL=https://${{ env.DOMAIN }}|" .env
+          sed -i "s|BACKEND_URL=.*|BACKEND_URL=https://${{ env.DOMAIN }}|" .env
+          sed -i "s|KEYCLOAK_URL=.*|KEYCLOAK_URL=https://${{ env.DOMAIN }}/auth|" .env
+          sed -i "s|FLAGSMITH_URL=.*|FLAGSMITH_URL=https://${{ env.DOMAIN }}:8098|" .env
+          sed -i "s|CORS_ALLOWED_ORIGINS=.*|CORS_ALLOWED_ORIGINS=https://${{ env.DOMAIN }}|" .env
+
+          sed -i "s|KC_HOSTNAME=.*|KC_HOSTNAME=${{ env.DOMAIN }}|" .env
+          sed -i "s|KEYCLOAK_ISSUER_URI=.*|KEYCLOAK_ISSUER_URI=https://${{ env.DOMAIN }}/auth/realms/rtmp|" .env
+          sed -i "s|KEYCLOAK_JWK_SET_URI=.*|KEYCLOAK_JWK_SET_URI=http://keycloak-prod:8080/auth/realms/rtmp/protocol/openid-connect/certs|" .env
+          sed -i "s|FLAGSMITH_API_URL=.*|FLAGSMITH_API_URL=http://flagsmith:8000/api/v1/|" .env
+          sed -i "s|POSTGRES_USER|${{ secrets.POSTGRES_USER }}|" .env
+          sed -i "s|POSTGRES_PASSWORD|${{ secrets.POSTGRES_PASSWORD }}|" .env
+
+      - name: Clean all project resources
+        run: |
+          echo "🧹 Stopping all containers..."
+
+          # Stop Terraform-managed resources first
+          if [ -d "deployments/terraform" ] && [ -f "deployments/terraform/terraform.tfstate" ]; then
+            echo "🗑️  Destroying Terraform-managed resources..."
+            cd deployments/terraform
+            terraform init -backend=false || true
+            terraform destroy -auto-approve || true
+            cd ../..
+          fi
+
+          # Stop Docker Compose resources
+          docker compose -f docker-compose-prod.yaml down || true
+
+          echo "🗑️  Removing project containers..."
+          docker ps -a --filter "name=rtmp-" --filter "name=db" --format "{{.ID}}" | xargs -r docker rm -f || true
+
+          echo "🗑️  Removing project volumes..."
+          docker volume ls --filter "name=group-project-es2526_105" --format "{{.Name}}" | xargs -r docker volume rm || true
+          docker volume ls --filter "name=rtmp" --format "{{.Name}}" | xargs -r docker volume rm || true
+
+          echo "🗑️  Removing project images..."
+          docker images --filter "reference=ghcr.io/detiuaveiro/es2526-105-*" --format "{{.ID}}" | xargs -r docker rmi -f || true
+          docker images --filter "reference=group-project-es2526_105-*" --format "{{.ID}}" | xargs -r docker rmi -f || true
+
+          echo "✅ Cleanup completed"
+
+      - name: Generate SSL certificates
+        run: |
+          echo "🔐 Generating SSL certificates..."
+          ${{ env.SCRIPTS_DIR }}/generate-ssl-cert.sh ${{ env.DOMAIN }}
+
+          mkdir -p "${{ env.RUNNER_CERTS_DIR }}"
+          cp ./certs/fullchain.pem "${{ env.RUNNER_CERTS_DIR }}/"
+          cp ./certs/privkey.pem "${{ env.RUNNER_CERTS_DIR }}/"
+
+          echo "✅ Certificates generated and stored on runner at: ${{ env.RUNNER_CERTS_DIR }}"
+
+      - name: Start infrastructure services (Database, Flagsmith, Keycloak)
+        run: |
+          docker compose -f docker-compose-prod.yaml up -d db flagsmith keycloak-prod
+
+      - name: Check infrastructure services health
+        run: ${{ env.SCRIPTS_DIR }}/wait-for-healthy.sh db rtmp-flagsmith rtmp-keycloak-prod
+
+      - name: Setup Flagsmith and get environment key
+        id: flagsmith_setup
+        run: |
+          ${{ env.SCRIPTS_DIR }}/setup-flagsmith-features.sh
+
+          # Extract the environment key from .env file
+          FLAGSMITH_KEY=$(grep "^FLAGSMITH_ENVIRONMENT_KEY=" .env | cut -d'=' -f2)
+          echo "flagsmith_key=$FLAGSMITH_KEY" >> "$GITHUB_OUTPUT"
+
+      - name: Setup Keycloak realm, roles and theme
+        run: ${{ env.SCRIPTS_DIR }}/setup-keycloak.sh --prod --setup-users "https://${{ env.DOMAIN }}"
+
+      - name: Stop all containers
+        run: |
+          docker compose -f docker-compose-prod.yaml down
+
+      - name: Setup summary
+        run: |
+          echo "=================================="
+          echo "✅ Environment setup completed!"
+          echo "=================================="
+          echo ""
+          echo "📝 Flagsmith Environment Key:"
+          echo "${{ steps.flagsmith_setup.outputs.flagsmith_key }}"
+          echo ""
+          echo "� Next steps:"
+          echo "1. Update GitHub Secret 'FLAGSMITH_ENVIRONMENT_KEY' with the key above"
+          echo "2. Go to: https://github.com/${{ github.repository }}/settings/secrets/actions"
+          echo "3. Click 'FLAGSMITH_ENVIRONMENT_KEY' or 'New repository secret'"
+          echo "4. Paste the key and save"
+          echo ""
+          echo "=================================="
+          echo "FLAGSMITH_ENVIRONMENT_KEY=${{ steps.flagsmith_setup.outputs.flagsmith_key }}"
+          echo "=================================="

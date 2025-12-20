@@ -1,0 +1,14 @@
+{
+  "name": "rtmp-e2e-tests",
+  "version": "1.0.0",
+  "description": "End-to-end tests for RTMP application",
+  "scripts": {
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run",
+    "test": "cypress run"
+  },
+  "devDependencies": {
+    "cypress": "^13.17.0",
+    "typescript": "^5.3.3"
+  }
+}

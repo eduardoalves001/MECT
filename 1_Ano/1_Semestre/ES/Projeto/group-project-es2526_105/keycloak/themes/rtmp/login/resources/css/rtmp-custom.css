@@ -1,0 +1,515 @@
+:root {
+  /* Tailwind CSS Color Variabes */
+  --color-white: #fff;
+  --color-black: #000;
+  
+  --color-slate-50: oklch(0.984 0.003 247.858);
+  --color-slate-200: oklch(0.929 0.013 255.508);
+  --color-slate-800: oklch(0.279 0.041 260.031);
+  --color-slate-900: oklch(0.208 0.042 265.755);
+  
+  --color-gray-100: oklch(0.967 0.003 264.542);
+  --color-gray-300: oklch(0.872 0.01 258.338);
+  --color-gray-400: oklch(0.707 0.022 261.325);
+  --color-gray-500: oklch(0.551 0.027 264.364);
+  --color-gray-700: oklch(0.373 0.034 259.733);
+  --color-gray-800: oklch(0.278 0.033 256.848);
+  
+  --color-red-50: oklch(0.971 0.013 17.38);
+  --color-red-200: oklch(0.885 0.062 18.334);
+  --color-red-800: oklch(0.444 0.177 26.899);
+  
+  --color-yellow-50: oklch(0.987 0.026 102.212);
+  --color-yellow-200: oklch(0.945 0.129 101.54);
+  --color-yellow-800: oklch(0.476 0.114 61.907);
+  
+  --color-green-50: oklch(0.982 0.018 155.826);
+  --color-green-200: oklch(0.925 0.084 155.995);
+  --color-green-800: oklch(0.448 0.119 151.328);
+  
+  --color-blue-50: oklch(0.97 0.014 254.604);
+  --color-blue-200: oklch(0.882 0.059 254.128);
+  --color-blue-800: oklch(0.424 0.199 265.638);
+  
+  /* RTMP Theme Variables */
+  --rtmp-primary: var(--color-slate-800);
+  --rtmp-primary-foreground: var(--color-white);
+  --rtmp-background: var(--color-gray-100);
+  --rtmp-foreground: var(--color-slate-900);
+  --rtmp-border: var(--color-slate-200);
+  --rtmp-input-border: var(--color-gray-300);
+  --rtmp-muted: var(--color-slate-50);
+  --rtmp-muted-foreground: var(--color-gray-500);
+  --rtmp-radius: 0.5rem;
+  --rtmp-light-gray: var(--color-gray-100);
+  --rtmp-button-bg: var(--color-slate-800);
+  --rtmp-button-hover: var(--color-slate-900);
+}
+
+body {
+  background: var(--color-gray-100) !important;
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* Main container */
+#kc-container-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem 1rem;
+}
+
+#kc-container {
+  width: 100%;
+  max-width: 26rem;
+}
+
+#kc-content {
+  background: var(--color-white) !important;
+  border-radius: var(--rtmp-radius) !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
+  border: 1px solid var(--rtmp-border) !important;
+  padding: 2.5rem 2rem !important;
+}
+
+#kc-form,
+#kc-form-wrapper {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.login-pf-page #kc-form-wrapper,
+.login-pf-page #kc-info-wrapper {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  padding: 0 !important;
+}
+
+#kc-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+#kc-header-wrapper {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--rtmp-muted-foreground);
+  margin-top: 0.5rem;
+  letter-spacing: 0.025em;
+}
+
+#kc-logo {
+  margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+#kc-logo-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+#kc-logo-wrapper img {
+  max-height: 3rem;
+  width: auto;
+}
+
+#kc-logo-wrapper::after {
+  content: "RTMP";
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--rtmp-foreground);
+  letter-spacing: -0.02em;
+}
+
+#kc-form-login {
+  margin-top: 0;
+}
+
+#kc-form-login::before {
+  content: "Sign in with Keycloak";
+  display: block;
+  text-align: center;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--rtmp-foreground);
+  margin-bottom: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+label {
+  display: none;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"],
+.form-control {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  padding-left: 2.5rem;
+  border: 1px solid var(--rtmp-input-border);
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--rtmp-foreground);
+  background: var(--color-gray-100);
+  transition: all 0.15s;
+  box-sizing: border-box;
+}
+
+.form-control:hover {
+  border-color: var(--color-gray-400);
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+.form-control:focus {
+  outline: none;
+  border-color: var(--color-gray-500);
+  background: var(--color-gray-100);
+  box-shadow: none;
+}
+
+.form-group {
+  position: relative;
+}
+
+.form-group:first-of-type::before {
+  content: "";
+  position: absolute;
+  left: 0.875rem;
+  top: 0.4rem;
+  width: 1rem;
+  height: 1rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='20' height='16' x='2' y='4' rx='2'/%3E%3Cpath d='m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  z-index: 1;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.form-group:nth-of-type(2)::before {
+  content: "";
+  position: absolute;
+  left: 0.875rem;
+  top: 0.4rem;
+  width: 1rem;
+  height: 1rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='11' x='3' y='11' rx='2' ry='2'/%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  z-index: 1;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+input::placeholder {
+  color: var(--rtmp-muted-foreground);
+  opacity: 0.6;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 0.875rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  width: 1rem;
+  height: 1rem;
+  color: var(--rtmp-muted-foreground);
+  opacity: 0.7;
+  transition: opacity 0.15s;
+  z-index: 2;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  font-size: 0;
+}
+
+.password-toggle.visible {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9.88 9.88a3 3 0 1 0 4.24 4.24'/%3E%3Cpath d='M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68'/%3E%3Cpath d='M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61'/%3E%3Cline x1='2' x2='22' y1='2' y2='22'/%3E%3C/svg%3E");
+}
+
+.password-toggle:hover {
+  opacity: 1;
+}
+
+.password-toggle:focus {
+  outline: none;
+}
+
+.btn-primary,
+#kc-login,
+input[type="submit"],
+button[type="submit"] {
+  width: 100% !important;
+  background-color: var(--color-slate-800) !important;
+  background-image: none !important;
+  background-repeat: no-repeat !important;
+  color: var(--color-white) !important;
+  border: none !important;
+  border-color: transparent !important;
+  padding: 0.75rem 1rem !important;
+  border-radius: 0.5rem !important;
+  font-weight: 500 !important;
+  font-size: 0.875rem !important;
+  cursor: pointer !important;
+  transition: all 0.2s !important;
+  margin-top: 0.5rem !important;
+  letter-spacing: 0 !important;
+  box-shadow: none !important;
+}
+
+.btn-primary:hover,
+#kc-login:hover,
+input[type="submit"]:hover,
+button[type="submit"]:hover {
+  background-color: var(--color-slate-900) !important;
+  background-image: none !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.btn-primary:active,
+#kc-login:active,
+input[type="submit"]:active,
+button[type="submit"]:active {
+  transform: translateY(0) !important;
+  background-color: var(--color-slate-900) !important;
+  background-image: none !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.btn-primary:focus,
+#kc-login:focus,
+input[type="submit"]:focus,
+button[type="submit"]:focus {
+  background-color: var(--color-slate-800) !important;
+  background-image: none !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+#kc-form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.75rem;
+  margin-bottom: 1rem;
+  margin-left: 0;
+  font-size: 0.875rem;
+}
+
+#kc-form-options a,
+#kc-registration a {
+  color: var(--color-gray-700);
+  text-decoration: none;
+  font-weight: 400;
+}
+
+#kc-form-options a:hover,
+#kc-registration a:hover {
+  text-decoration: underline;
+  color: var(--color-gray-800);
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  margin: 0;
+}
+
+.checkbox input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+  margin-right: 0.5rem;
+  cursor: pointer;
+  accent-color: var(--color-slate-800);
+  border-radius: 0.25rem;
+}
+
+.checkbox label {
+  margin: 0;
+  cursor: pointer;
+  font-weight: 400;
+  font-size: 0.875rem;
+  color: var(--color-gray-700);
+  display: block !important;
+}
+
+#kc-info-message p {
+  color: var(--rtmp-muted-foreground);
+  font-size: 0.875rem;
+  margin: 0.5rem 0;
+}
+
+#input-error,
+.kc-tooltip-text {
+  display: block;
+  color: var(--color-red-800);
+  font-size: 0.75rem;
+  margin-top: 0.375rem;
+  margin-left: 0;
+  padding-left: 0;
+  line-height: 1.4;
+}
+
+.alert {
+  padding: 0.75rem 1rem;
+  border-radius: calc(var(--rtmp-radius) - 2px);
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+}
+
+.alert-error {
+  background-color: var(--color-red-50);
+  border: 1px solid var(--color-red-200);
+  color: var(--color-red-800);
+}
+
+.alert-warning {
+  background-color: var(--color-yellow-50);
+  border: 1px solid var(--color-yellow-200);
+  color: var(--color-yellow-800);
+}
+
+.alert-success {
+  background-color: var(--color-green-50);
+  border: 1px solid var(--color-green-200);
+  color: var(--color-green-800);
+}
+
+.alert-info {
+  background-color: var(--color-blue-50);
+  border: 1px solid var(--color-blue-200);
+  color: var(--color-blue-800);
+}
+
+#kc-registration {
+  text-align: center;
+  margin-top: 1.5rem;
+  padding-top: 0;
+  border-top: none;
+}
+
+#kc-registration span {
+  color: var(--color-gray-500);
+  font-size: 0.875rem;
+}
+
+#kc-registration a {
+  color: var(--color-slate-800);
+  font-weight: 500;
+}
+
+#kc-social-providers {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--rtmp-border);
+}
+
+#kc-social-providers ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#kc-social-providers li {
+  margin-bottom: 0.75rem;
+}
+
+#kc-social-providers a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.625rem 1rem;
+  border: 1px solid var(--rtmp-border);
+  border-radius: calc(var(--rtmp-radius) - 2px);
+  background: var(--color-white);
+  color: var(--rtmp-foreground);
+  text-decoration: none;
+  transition: all 0.2s;
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+#kc-social-providers a:hover {
+  background-color: var(--rtmp-muted);
+  border-color: var(--rtmp-primary);
+}
+
+#kc-content-wrapper p {
+  text-align: center;
+  color: var(--rtmp-muted-foreground);
+  font-size: 0.875rem;
+  margin-top: 2rem;
+}
+
+@media (max-width: 640px) {
+  #kc-container-wrapper {
+    padding: 1rem 0.5rem;
+  }
+  
+  .login-pf-page #kc-form-wrapper,
+  .login-pf-page #kc-info-wrapper,
+  #kc-form,
+  #kc-content {
+    padding: 1.5rem !important;
+  }
+}
+
+/* Remove default Keycloak styling */
+.login-pf body {
+  background: linear-gradient(135deg, var(--gradient-from) 0%, var(--gradient-to) 100%) !important;
+}
+
+.login-pf .container {
+  padding: 0;
+}
+
+#kc-locale {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1000;
+}
+
+#kc-locale a {
+  color: var(--rtmp-foreground);
+  font-size: 0.875rem;
+}
+
+.kc-tooltip-wrapper {
+  position: relative;
+}
+
+.kc-tooltip-text {
+  font-size: 0.75rem;
+  color: var(--rtmp-muted-foreground);
+  margin-top: 0.25rem;
+  display: block;
+}
