@@ -1,0 +1,7 @@
+.vscode/
+sndfile-example/src/build/
+sndfile-example/bin/
+sndfile-example/src/CMakeLists.txt
+bit_stream/src/build/
+bit_stream/bin/
+bit_stream/src/CMakeLists.txt
