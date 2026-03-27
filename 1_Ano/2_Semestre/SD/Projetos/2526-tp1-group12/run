@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# 1. Compile the project first to ensure target/classes exists
+./mvnw compile -q
+
+# 2. Ask Maven for the classpath string and store it in a variable
+# -q keeps the output "quiet" so we only get the path string
+# NOTE: Only update the classpath file if pom.xml is newer than the cache
+if [ "pom.xml" -nt "build/classpath.cache" ]; then
+    ./mvnw dependency:build-classpath -Dmdep.outputFile=build/classpath.cache -q
+fi
+CP=$(cat build/classpath.cache)
+
+# 3. Add your compiled project classes to that classpath
+# pom.xml config places compiled classes in build/classes
+FULL_CP="build/classes:$CP"
+
+# 4. Run the Java program directly
+# Now you have full control over arguments and exit codes!
+java -cp "$FULL_CP" deti.sd.mt.ct.Simulation "$@"

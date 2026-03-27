@@ -1,0 +1,40 @@
+### JetBrains (IntelliJ IDEA) ###
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+# Project-specific configurations can sometimes be ignored:
+# .idea/workspace.xml
+# .idea/tasks.xml
+
+### Eclipse ###
+.metadata/
+bin/
+tmp/
+.tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.classpath
+.project
+.factorypath
+
+### VS Code ###
+.vscode/
+.history/
+*.code-workspace
+
+### Java / Maven / Gradle ###
+target/
+build/
+.gradle/
+.project
+
+### Project Documentation (Local Only) ###
+TODO.md
+PHASE*.md
+LOGGING.md
