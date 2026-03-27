@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DETI Coin WebAssembly Miner</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a2e;
+            min-height: 100vh;
+            padding: 20px;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .card {
+            background: rgba(30, 30, 46, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            color: #e0e0e0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .control-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #b0b0b0;
+        }
+        
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #3a3a52;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+            background: #252538;
+            color: #fff;
+        }
+        
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            padding: 12px 30px;
+            font-size: 1.1em;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .btn-secondary {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #c0392b;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat {
+            background: linear-gradient(135deg, #4a4a6a 0%, #5a5a7a 100%);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+        
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: 700;
+        }
+        
+        .coins-container {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .coin {
+            background: #2a2a3e;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            color: #e0e0e0;
+        }
+        
+        .coin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .coin-value {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .coin-hash {
+            font-size: 0.85em;
+            color: #999;
+            word-break: break-all;
+        }
+        
+        .coin-message {
+            margin-top: 8px;
+            padding: 8px;
+            background: #1e1e30;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: #c0c0c0;
+            word-wrap: break-word;
+        }
+        
+        .progress {
+            width: 100%;
+            height: 30px;
+            background: #2a2a3e;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: 600;
+            z-index: 1;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+        
+        .status {
+            padding: 12px;
+            background: rgba(255, 243, 205, 0.2);
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            color: #ffd54f;
+        }
+        
+        .error {
+            background: rgba(248, 215, 218, 0.2);
+            border-color: #f5c6cb;
+            color: #f8a5aa;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .spinner {
+            border: 4px solid #3a3a52;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>👻 DETI Coin WebAssembly Miner</h1>
+            <p>AAD21 - Eduardo Alves e Tomás Rodrigues</p>
+        </div>
+        
+        <div class="card">
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                <p>Loading WebAssembly module...</p>
+            </div>
+            
+            <div id="miner" style="display: none;">
+                <div class="controls">
+                    <div class="control-group">
+                        <label for="attempts">Attempts per batch:</label>
+                        <input type="number" id="attempts" value="100000" min="1000" max="10000000" step="10000">
+                    </div>
+                    <div class="control-group">
+                        <label>&nbsp;</label>
+                        <button id="startBtn" class="btn-primary">Start Mining</button>
+                    </div>
+                    <div class="control-group">
+                        <label>&nbsp;</label>
+                        <button id="stopBtn" class="btn-secondary" style="display: none;">Stop Mining</button>
+                    </div>
+                </div>
+                
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-label">Total Attempts</div>
+                        <div class="stat-value" id="totalAttempts">0</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Coins Found</div>
+                        <div class="stat-value" id="coinsFound">0</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Hash Rate</div>
+                        <div class="stat-value" id="hashRate">0 H/s</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Time Mining</div>
+                        <div class="stat-value" id="miningTime">0s</div>
+                    </div>
+                </div>
+                
+                <div id="status" class="status" style="display: none;"></div>
+                
+                <h3 style="margin-bottom: 15px;"> Found Coins:</h3>
+                <div id="coinsContainer" class="coins-container">
+                    <p style="text-align: center; color: #999; padding: 40px;">No coins found yet. Start mining!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let Module = null;
+        let mining = false;
+        let totalAttempts = 0;
+        let startTime = 0;
+        let miningInterval = null;
+        let statsInterval = null;
+        let lastDisplayed = 0;  // Track last displayed coin
+        
+        // Load WebAssembly module
+        async function loadWasm() {
+            try {
+                // Note: This requires deti_coin_wasm.js to be compiled first
+                const script = document.createElement('script');
+                script.src = 'deti_coin_wasm.js';
+                script.onload = async () => {
+                    Module = await DETICoinMiner();
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('miner').style.display = 'block';
+                    showStatus('WebAssembly module loaded! Ready to mine.', false);
+                };
+                script.onerror = () => {
+                    showStatus('Error: Could not load deti_coin_wasm.js. Please compile the WebAssembly module first.', true);
+                };
+                document.head.appendChild(script);
+            } catch (error) {
+                showStatus('Error loading WebAssembly: ' + error.message, true);
+            }
+        }
+        
+        function showStatus(message, isError) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.className = isError ? 'status error' : 'status';
+            statusDiv.style.display = 'block';
+            
+            if (!isError) {
+                setTimeout(() => {
+                    statusDiv.style.display = 'none';
+                }, 5000);
+            }
+        }
+        
+        function formatNumber(num) {
+            if (num >= 1e9) return (num / 1e9).toFixed(2) + 'B';
+            if (num >= 1e6) return (num / 1e6).toFixed(2) + 'M';
+            if (num >= 1e3) return (num / 1e3).toFixed(2) + 'K';
+            return num.toString();
+        }
+        
+        function formatHashRate(hps) {
+            if (hps >= 1e6) return (hps / 1e6).toFixed(2) + 'MH/s';
+            if (hps >= 1e3) return (hps / 1e3).toFixed(2) + 'KH/s';
+            return hps.toFixed(0) + 'H/s';
+        }
+        
+        function updateStats() {
+            document.getElementById('totalAttempts').textContent = formatNumber(totalAttempts);
+            
+            const elapsed = (Date.now() - startTime) / 1000;
+            const hashRate = totalAttempts / elapsed;
+            document.getElementById('hashRate').textContent = formatHashRate(hashRate);
+            document.getElementById('miningTime').textContent = Math.floor(elapsed) + 's';
+        }
+        
+        function displayCoin(index) {
+            const coinPtr = Module.ccall('get_coin', 'number', ['number'], [index]);
+            if (!coinPtr) return;
+            
+            // Read coin data from memory
+            const message = new Uint32Array(Module.HEAPU8.buffer, coinPtr, 14);
+            const hash = new Uint32Array(Module.HEAPU8.buffer, coinPtr + 56, 5);
+            const zeros = Module.HEAPU32[(coinPtr + 76) >> 2];
+            
+            // Convert message to string
+            const messageBytes = new Uint8Array(14 * 4);
+            for (let i = 0; i < 14; i++) {
+                const word = message[i];
+                messageBytes[i * 4 + 0] = (word >> 24) & 0xFF;
+                messageBytes[i * 4 + 1] = (word >> 16) & 0xFF;
+                messageBytes[i * 4 + 2] = (word >> 8) & 0xFF;
+                messageBytes[i * 4 + 3] = word & 0xFF;
+            }
+            
+            // Extract readable text (first 54 bytes)
+            let messageText = '';
+            for (let i = 0; i < 54; i++) {
+                const c = messageBytes[i ^ 3]; // XOR for byte order
+                messageText += (c >= 32 && c < 127) ? String.fromCharCode(c) : '.';
+            }
+            
+            // Format hash
+            const hashHex = Array.from(hash).map(h => h.toString(16).padStart(8, '0')).join('');
+            
+            // Create coin element
+            const coinDiv = document.createElement('div');
+            coinDiv.className = 'coin';
+            coinDiv.innerHTML = `
+                <div class="coin-header">
+                    <span class="coin-value">V${zeros.toString().padStart(2, '0')}</span>
+                    <span style="color: #999; font-size: 0.9em;">${new Date().toLocaleTimeString()}</span>
+                </div>
+                <div class="coin-hash">Hash: ${hashHex}</div>
+                <div class="coin-message">${messageText}</div>
+            `;
+            
+            const container = document.getElementById('coinsContainer');
+            if (container.children[0]?.tagName === 'P') {
+                container.innerHTML = '';
+            }
+            container.insertBefore(coinDiv, container.firstChild);
+        }
+        
+        function mineBatch() {
+            if (!mining) return;
+            
+            const attempts = parseInt(document.getElementById('attempts').value) || 100000;
+            
+            // Mine a batch
+            Module.ccall('mine_deti_coins', 'number', ['number'], [attempts]);
+            totalAttempts += attempts;
+            
+            // Check for new coins
+            const foundCount = Module.ccall('get_found_count', 'number', [], []);
+            document.getElementById('coinsFound').textContent = foundCount;
+            
+            // Display any new coins
+            for (let i = lastDisplayed; i < foundCount; i++) {
+                displayCoin(i);
+            }
+            lastDisplayed = foundCount;
+        }
+        
+        document.getElementById('startBtn').addEventListener('click', () => {
+            if (mining) return;
+            
+            mining = true;
+            startTime = Date.now();
+            totalAttempts = 0;
+            
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('stopBtn').style.display = 'inline-block';
+            
+            // Reset coin count in WASM
+            Module.ccall('reset_coins', null, [], []);
+            
+            // Start mining loop
+            miningInterval = setInterval(mineBatch, 10);
+            
+            // Start stats update
+            statsInterval = setInterval(updateStats, 1000);
+            
+            showStatus('Mining started!', false);
+        });
+        
+        document.getElementById('stopBtn').addEventListener('click', () => {
+            mining = false;
+            
+            clearInterval(miningInterval);
+            clearInterval(statsInterval);
+            
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('stopBtn').style.display = 'none';
+            
+            updateStats();
+            showStatus('Mining stopped.', false);
+        });
+        
+        // Load WASM on page load
+        loadWasm();
+    </script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+Benchmark Results - qui 20 nov 2025 04:27:58 WET
+Testing Duration: 60 seconds per implementation
+========================================
+
+1. Testing: sha1_cpu_search (CPU, No SIMD)
+   Attempts: 450000000
+   Hash Rate: 7592433 H/s
+   Coins Found: 0
+
+2. Testing: sha1_cpu_avx_search (CPU, AVX - 4 lanes)
+   Attempts: 600000000
+   Hash Rate: 10678584 H/s
+   Coins Found: 0
+
+3. Testing: sha1_cpu_avx2_search (CPU, AVX2 - 8 lanes)
+   Attempts: 900000000
+   Hash Rate: 15246241 H/s
+   Coins Found: 0
+
+4. Testing: sha1_cpu_openmp_avx2_search (CPU, OpenMP + AVX2)
+   Attempts: 2678844336
+   Hash Rate: 44940279 H/s
+   Coins Found: 0
+
+5. Testing: sha1_cuda_search (CUDA GPU)
+   Attempts: 41943040000
+   Hash Rate: 812302465 H/s
+   Coins Found: 5
+
+========================================
+SUMMARY
+========================================
+
+Implementation                  Attempts (60s)       Hash Rate    Speedup
+------------------------------ --------------- --------------- ----------
+CPU (No SIMD)                        450000000     7592433 H/s      1.00x
+CPU AVX (4 lanes)                    600000000    10678584 H/s      1.33x
+CPU AVX2 (8 lanes)                   900000000    15246241 H/s      2.00x
+CPU OpenMP+AVX2                     2678844336    44940279 H/s      5.95x
+CUDA GPU                           41943040000   812302465 H/s     93.20x
+
+========================================
+Benchmark complete!
+Full results saved to: benchmark_results.txt
+========================================
