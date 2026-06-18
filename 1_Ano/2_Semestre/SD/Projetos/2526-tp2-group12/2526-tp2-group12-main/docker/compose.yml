@@ -1,0 +1,41 @@
+
+# Define the template outside of the services block
+x-common-config: &common-config
+  build:
+    context: ..
+    dockerfile: docker/Dockerfile
+  image: sd-moss-docker:latest
+  volumes:
+    - moss_data:/app/data
+
+services:
+  manager:
+    <<: *common-config
+    container_name: manager
+    ports:
+      - "4081:4081"
+    entrypoint: ["java", "-cp", "app.jar:lib/*", "deti.sd.moss.app.ManagerNode"]
+
+  volume-0:
+    <<: *common-config
+    container_name: volume-0
+    entrypoint: ["java", "-cp", "app.jar:lib/*", "deti.sd.moss.app.VolumeNode",
+      "-m", "manager:4081", "-d", "data/v0"]
+
+  volume-1:
+    <<: *common-config
+    container_name: volume-1
+    entrypoint: ["java", "-cp", "app.jar:lib/*", "deti.sd.moss.app.VolumeNode",
+      "-m", "manager:4081", "-d", "data/v1"]
+
+  object:
+    <<: *common-config
+    container_name: object
+    ports:
+      - "4281:4281"
+    entrypoint: ["java", "-cp", "app.jar:lib/*", "deti.sd.moss.app.ObjectNode",
+      "-m", "manager:4081"]
+
+# Declare the named volumes here
+volumes:
+  moss_data:

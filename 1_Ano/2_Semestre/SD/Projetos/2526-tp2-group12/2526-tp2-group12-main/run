@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [ $# -lt 1 ]; then
+  echo "Usage: $0 <command> [args...]"
+  echo ""
+  echo "Available commands:"
+  echo "  manager   coordinator and volume manager"
+  echo "  volume    manages data"
+  echo "  object    manages objects"
+  echo "  gui       dashboard"
+  exit 1
+fi
+
+command="$1"
+shift
+
+case "$command" in
+  manager)
+    class="deti.sd.moss.app.ManagerNode"
+    ;;
+
+  volume)
+    class="deti.sd.moss.app.VolumeNode"
+    ;;
+
+  object)
+    class="deti.sd.moss.app.ObjectNode"
+    ;;
+
+  gui)
+    class="deti.sd.moss.app.GuiNode"
+    ;;
+
+  moss)
+    class="deti.sd.moss.app.ClientNode"
+    ;;
+  *)
+    echo "Unknown command: $command"
+    echo "Available commands: manager | volume | object | client"
+    exit 1
+    ;;
+esac
+
+# 1. Compile the project first to ensure target/classes exists
+# ./mvnw compile -q
+
+# 2. Ask Maven for the classpath string and store it in a variable
+# -q keeps the output "quiet" so we only get the path string
+# NOTE: Only update the classpath file if pom.xml is newer than the cache
+if [ "pom.xml" -nt "build/classpath.cache" ]; then
+    ./mvnw dependency:build-classpath -Dmdep.outputFile=build/classpath.cache -q
+fi
+CP=$(cat build/classpath.cache)
+
+# 3. Add your compiled project classes to that classpath
+# (Use : for Linux/Mac, ; for Windows)
+FULL_CP="build/classes:$CP"
+
+exec java --enable-native-access=ALL-UNNAMED \
+          -cp $FULL_CP \
+          $class "$@"

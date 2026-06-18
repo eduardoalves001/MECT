@@ -1,0 +1,78 @@
+
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "deti.sd.moss.infra.rpc.manager";
+option java_outer_classname = "ManagerProto";
+
+package deti.sd.doss.infra.rpc;
+
+service Manager {
+  rpc Assign(ProtoAssignRequest) returns (ProtoAssignReply) {}
+  rpc Lookup(ProtoLookupRequest) returns (ProtoLookupReply) {}
+  rpc Heartbeat(ProtoVolumeBeatRequest) returns (ProtoVolumeBeatReply) {}
+  rpc State(ProtoStateRequest) returns (ProtoStateReply) {}
+}
+
+message ProtoAssignRequest {
+  // Number of requested replicas
+  int32 Replicas = 1;
+}
+
+message ProtoAssignReply {
+  // The File Ticker. The format is <Volume ID>:<FileKey><Cookie>
+  string Ticket = 1;
+  // The address of the volume node
+  string VolumeUrl = 2;
+  // Number of replicas
+  int32 Count = 3;
+  // The addresses of the volume nodes for replication
+  repeated string Url = 4;
+}
+
+message ProtoLookupRequest {
+  string Ticket = 1;
+}
+
+message ProtoLookupReply {
+  string Url = 1;
+}
+
+message ProtoVolumeBeatRequest {
+  string Url = 1;
+  int32 Count = 2;
+
+  message ProtoVolumeInfo {
+    int32 Vid = 1;
+    int32 FileCount = 2;
+    int32 AvailableSize  = 3;
+    int32 Status = 4;
+  }
+
+  repeated ProtoVolumeInfo vinfo = 3;
+}
+
+message ProtoVolumeBeatReply {
+    int32 Status = 1;
+}
+
+message ProtoStateRequest {}
+
+message ProtoStateReply {
+  repeated ProtoStateNode nodes = 1;
+  repeated ProtoStateVolume volumes = 2;
+}
+
+message ProtoStateNode {
+  string url = 1;
+  bool online = 2;
+  string lastSeen = 3;
+}
+
+message ProtoStateVolume {
+  int32 vid = 1;
+  string nodeUrl = 2;
+  int32 fileCount = 3;
+  int32 availableSize = 4;
+  int32 status = 5;
+}

@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+// Use standard empty type for requests/responses with no data
+// import "google/protobuf/empty.proto";
+
+option java_multiple_files = true;
+option java_package = "deti.sd.moss.infra.rpc.volume";
+option java_outer_classname = "VolumeProto";
+
+package deti.sd.doss.infra.rpc;
+
+service Volume {
+  rpc AssignVolume(ProtoAssignVolumeRequest) returns (ProtoAssignVolumeReply) {}
+  rpc Write(ProtoWriteRequest) returns (ProtoWriteReply) {}
+  rpc Read(ProtoReadRequest) returns (ProtoReadReply) {}
+  rpc Delete(ProtoDeleteRequest) returns (ProtoDeleteReply) {}
+  rpc Compact(ProtoCompactRequest) returns (ProtoCompactReply) {}
+}
+
+message ProtoAssignVolumeRequest {
+  int32 vid = 1;
+  repeated string urls = 2;
+}
+
+message ProtoAssignVolumeReply {
+  int32 status = 1;
+}
+
+message ProtoWriteRequest {
+  int32 vid = 1;
+  int32 fid = 2;
+  int32 cookie = 3;
+  bytes data = 4;
+}
+
+message ProtoWriteReply {
+  int32 status = 1;
+}
+
+message ProtoReadRequest {
+  int32 vid = 1;
+  int32 fid = 2;
+  int32 cookie = 3;
+}
+
+message ProtoReadReply {
+  int32 status = 1;
+  bytes data = 2;
+}
+
+message ProtoDeleteRequest {
+  int32 vid = 1;
+  int32 fid = 2;
+  int32 cookie = 3;
+}
+
+message ProtoDeleteReply {
+  int32 status = 1;
+}
+
+message ProtoCompactRequest {
+  int32 vid = 1;
+}
+
+message ProtoCompactReply {
+  int32 status = 1;
+}
