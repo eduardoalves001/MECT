@@ -1,0 +1,6 @@
+model,best_params,best_cv_balanced_accuracy,candidates,cv_fits,seconds,n_iter,objective_evaluations
+Symbolist - arvore,"{""model__max_depth"": 4, ""model__min_samples_leaf"": 1}",0.9171783625730994,6,18,0.17756630000076257,0,0
+Connectionist - MLP,"{""model__hidden_units"": 16, ""model__l2"": 0.01}",0.9800647451963241,4,12,7.581214000005275,80,0
+Evolutionary - GA,"{""model__l2"": 0.02, ""model__n_iter"": 36, ""model__n_pop"": 14}",0.9407268170426065,8,24,0.9005312999943271,36,555
+Bayesian - Gaussian NB,"{""model__var_smoothing"": 1e-09}",0.92546992481203,3,9,0.0547212999954354,0,0
+Analogizer - kNN,"{""model__n_neighbors"": 15, ""model__weights"": ""distance""}",0.9547619047619048,6,18,0.931077400004142,0,0

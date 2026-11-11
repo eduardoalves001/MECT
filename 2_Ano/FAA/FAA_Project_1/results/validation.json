@@ -1,0 +1,26 @@
+{
+    "validation_date":  "2026-11-06",
+    "entry_point":  "project1.py",
+    "execution_mode":  "python_script",
+    "python_executable":  "C:\\Users\\Eduardo BOT\\Desktop\\FAA_Project_1\\.venv\\Scripts\\python.exe",
+    "pip_check":  "passed",
+    "script_exit_code":  0,
+    "script_elapsed_seconds":  221.36173899999994,
+    "readme_maintained_manually":  true,
+    "readme_unchanged_by_execution":  true,
+    "readme_local_links_checked":  38,
+    "readme_missing_links":  [
+
+                             ],
+    "scientific_results_preserved":  true,
+    "figure_count":  9,
+    "dataset_sha256":  "9b9e3a2fe53a2264f7e756aff00ab883450186c47bfb2027b4d90ca51d23347d",
+    "selected_model":  "Connectionist - MLP",
+    "source_sha256":  "c144484557886bf9dc3a4a2a577e184681d0ac4ab518d7a022d80658db6e1f4d",
+    "entry_point_rename_verified":  true,
+    "validation_basis":  "Full execution validated before rename; source bytes unchanged after rename.",
+    "pinned_dependencies":  41,
+    "dependency_manifest":  "requirements.txt",
+    "dependency_versions_preserved":  true,
+    "dependency_manifest_sha256":  "05f35342accdb0c8331e70da8062e4044c4bf6f60a501e52c368f601472ceff9"
+}

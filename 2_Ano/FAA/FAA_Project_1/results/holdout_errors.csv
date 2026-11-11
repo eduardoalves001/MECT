@@ -1,0 +1,4 @@
+row_id,true_label,predicted_label,p_malignant,mean_radius,mean_texture,mean_concavity
+363,1,0,0.5900381803512573,16.5,18.29,0.05862
+541,1,0,0.7464839220046997,14.47,24.99,0.1009
+73,0,1,0.11152338981628418,13.8,15.79,0.07789

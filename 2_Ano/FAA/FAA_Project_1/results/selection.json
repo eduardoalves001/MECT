@@ -1,0 +1,7 @@
+{
+  "model": "Connectionist - MLP",
+  "criterion": "balanced_accuracy_mean",
+  "selected_before_test": true,
+  "tie_break": "menor desvio padrão; depois nome",
+  "test_previously_observed": true
+}

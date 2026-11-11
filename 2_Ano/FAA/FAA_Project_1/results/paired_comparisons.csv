@@ -1,0 +1,6 @@
+model,reference,n_folds,mean_difference,std_difference,wins,ties,losses
+Symbolist - arvore,Connectionist - MLP,10,-0.042260061919504655,0.027879910561543177,1,0,9
+Evolutionary - GA,Connectionist - MLP,10,-0.043111455108359176,0.02786124211820649,0,1,9
+Bayesian - Gaussian NB,Connectionist - MLP,10,-0.04783281733746133,0.026951476401863947,0,0,10
+Analogizer - kNN,Connectionist - MLP,10,-0.018808049535603756,0.018680052282261342,2,0,8
+Baseline - maioria,Connectionist - MLP,10,-0.4741486068111455,0.01341412846840985,0,0,10

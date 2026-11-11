@@ -1,0 +1,7 @@
+model,scaled,balanced_accuracy_mean,balanced_accuracy_std
+Connectionist - MLP,false,0.5,0.0
+Connectionist - MLP,true,0.9742690058479532,0.022558247394135575
+Bayesian - Gaussian NB,false,0.9324874686716792,0.011915104002644011
+Bayesian - Gaussian NB,true,0.92546992481203,0.01676703319357093
+Analogizer - kNN,false,0.9218567251461988,0.007895752046487046
+Analogizer - kNN,true,0.9500835421888053,0.01801128710304961
